@@ -3,7 +3,7 @@ Unofficial Nova extension tailored for neo.
 
 
 - Neo Bypass for nova.
-- Custom Nova theme made for nova.
+- Custom Nova theme made for neo.
 - Improved Security regarding cookies.
 - Auto Update feature removed.
 
