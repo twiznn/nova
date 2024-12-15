@@ -7,10 +7,10 @@ Unofficial Nova extension tailored for neo.
 
 
 
-#Installation 
-Download the extension
-Extract folder to your preferred location
-Access Chrome extensions (chrome://extensions)
-Enable Developer mode
-Select 'Load unpacked' and choose the extension folder
-Verify successful installation
+# Installation 
+- Download the extension
+- Extract folder to your preferred location
+- Access Chrome extensions (chrome://extensions)
+- Enable Developer mode
+- Select 'Load unpacked' and choose the extension folder
+- Verify successful installation
