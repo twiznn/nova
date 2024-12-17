@@ -15,7 +15,7 @@
   "host_permissions": ["https://neo.bullx.io/*", "https://photon-sol.tinyastro.io/*", "https://bullx.io/*", "https://click.tradeonnova.io/"],
   "web_accessible_resources": [
     {
-      "resources": ["src/nova.avif"],
+      "resources": ["src/nova.avif", "src/logo.png"],
       "matches": ["https://neo.bullx.io/*"]
     }
   ],

@@ -143,24 +143,24 @@ function insertAfter(referenceNode, newNode) {
   
   // Message Listener
   chrome.runtime.onMessage.addListener(async function (request) {
-    console.log(`[onMessage] Received message: ${request.message}`);
+   
   
     chrome.storage.local.get(["is_nova_extension_on"]).then(async (result) => {
       const isExtensionOn = result.is_nova_extension_on;
-      console.log(`[onMessage] Extension is ${isExtensionOn ? 'ON' : 'OFF'}`);
+     
   
       // Only proceed if the extension is on
       if (!isExtensionOn) {
-        console.log(`[onMessage] Extension is OFF. Exiting.`);
+        
         return;
       }
   
       // PumpVision (Unchanged)
       if (request.message === "bullx-pump-vision") {
-        console.log(`[onMessage] Handling 'bullx-pump-vision' message.`);
+       
         const container = await findPumpVisionContainer();
         if (container) {
-          console.log(`[bullx-pump-vision] PumpVision container found.`);
+         
           addMemescopeQTButton();
           handleThemeAndTargetUpdates()
           const observer = new MutationObserver(() => {
@@ -175,7 +175,7 @@ function insertAfter(referenceNode, newNode) {
   
       // Save Message (Unchanged)
       if (request.message === "bullx-token-save") {
-        console.log(`[onMessage] Handling 'bullx-token-save' message.`);
+       
         // Uncomment and implement if needed
         // addTopTokenCustomBuyOrSellButtons();
       }
@@ -183,13 +183,13 @@ function insertAfter(referenceNode, newNode) {
       // Terminal (Modified)
       if (request.message === "neo-token") {
         handleThemeAndTargetUpdates()
-        overrideSuspiciousModal();
-        console.log(`[onMessage] Handling 'bullx-token' message.`);
+        
+       
         const topBar = await findTopBar();
         const buySellContainer = await findBuySellContainer(); // May not be needed
   
         if (topBar) {
-          console.log(`[bullx-token] Top Bar found.`);
+        
           addTopTokenCustomBuyOrSellButtons();
         } else {
           console.error(`[bullx-token] Top Bar not found.`);
@@ -197,7 +197,7 @@ function insertAfter(referenceNode, newNode) {
   
         // If buySellContainer is still relevant, handle accordingly
         if (buySellContainer) {
-          console.log(`[bullx-token] Buy/Sell Container found.`);
+        
           addCustomBuyButton();
         } else {
           console.warn(`[bullx-token] Buy/Sell Container not found.`);
@@ -209,7 +209,7 @@ function insertAfter(referenceNode, newNode) {
           const observer = new MutationObserver(() => {
             const migrating = document.querySelector("div.buy-sell-migrating");
             if (Boolean(migrating) !== Boolean(currentMigrating)) {
-              console.log(`[bullx-token] Migration state changed.`);
+             
               currentMigrating = migrating;
               addCustomBuyButton();
             }
@@ -220,7 +220,7 @@ function insertAfter(referenceNode, newNode) {
   
       // Home (Unchanged - Disabled)
       if (request.message === "bullx-home") {
-        console.log(`[onMessage] Handling 'bullx-home' message (currently disabled).`);
+      
         // Home-related code remains unchanged or disabled
       }
     }).catch((storageError) => {
@@ -230,11 +230,11 @@ function insertAfter(referenceNode, newNode) {
   
   // Find Functions
   async function findMain(timeout = 12000) {
-    console.log(`[findMain] Searching for main container with timeout ${timeout}ms.`);
+  
     for (let i = 0; i < timeout / 600; i++) {
       const main = document.querySelector(".ant-layout-content");
       if (main) {
-        console.log(`[findMain] Main container found.`);
+       
         return main;
       }
       await new Promise((r) => setTimeout(r, 600));
@@ -244,11 +244,10 @@ function insertAfter(referenceNode, newNode) {
   }
   
   async function findPumpVisionContainer(timeout = 12000) {
-    console.log(`[findPumpVisionContainer] Searching for PumpVision container with timeout ${timeout}ms.`);
-    for (let i = 0; i < timeout / 600; i++) {
+     for (let i = 0; i < timeout / 600; i++) {
       const container = document.querySelector("div.grid");
       if (container) {
-        console.log(`[findPumpVisionContainer] PumpVision container found.`);
+    
         return container;
       }
       await new Promise((r) => setTimeout(r, 600));
@@ -258,11 +257,11 @@ function insertAfter(referenceNode, newNode) {
   }
   
   async function findTableContainer(timeout = 12000) {
-    console.log(`[findTableContainer] Searching for table container with timeout ${timeout}ms.`);
+   
     for (let i = 0; i < timeout / 600; i++) {
       const container = document.querySelector(".ant-table-tbody");
       if (container) {
-        console.log(`[findTableContainer] Table container found.`);
+      
         return container;
       }
       await new Promise((r) => setTimeout(r, 600));
@@ -272,13 +271,13 @@ function insertAfter(referenceNode, newNode) {
   }
   
   async function findTopBar(timeout = 12000) {
-    console.log(`[findTopBar] Searching for Top Bar with timeout ${timeout}ms.`);
+   
     for (let i = 0; i < timeout / 600; i++) {
       const topBar = document.querySelector(
         'div.text-xs.flex.flex-col.md\\:flex-row.items-center.font-medium.text-left > div.flex.items-center.justify-between.py-\\[7px\\].w-full.md\\:w-auto.md\\:mt-0.md\\:border-t-0.px-2.md\\:pr-8'
       );
       if (topBar) {
-        console.log(`[findTopBar] Top Bar found.`);
+       
         return topBar;
       }
       await new Promise((r) => setTimeout(r, 600));
@@ -288,11 +287,11 @@ function insertAfter(referenceNode, newNode) {
   }
   
   async function findBuySellContainer(timeout = 12000) {
-    console.log(`[findBuySellContainer] Searching for Buy/Sell Container with timeout ${timeout}ms.`);
+   
     for (let i = 0; i < timeout / 600; i++) {
       const container = document.querySelector("div.ant-drawer-content-wrapper");
       if (container) {
-        console.log(`[findBuySellContainer] Buy/Sell Container found.`);
+      
         return container;
       }
       await new Promise((r) => setTimeout(r, 600));
@@ -341,7 +340,8 @@ function insertAfter(referenceNode, newNode) {
         // Create Custom Button
         const customButton = document.createElement("button");
         const buttonImg = document.createElement("img");
-        buttonImg.src = "https://click.tradeonnova.io/images/logo.png";
+      
+        buttonImg.src = chrome.runtime.getURL('src/logo.png');
         buttonImg.alt = "Nova Logo";
         buttonImg.style.aspectRatio = "1/1";
         buttonImg.style.height = "15px";
@@ -359,7 +359,7 @@ function insertAfter(referenceNode, newNode) {
         customButton.style.border = "1px solid #ce7bed";
   
         customButton.onclick = async function () {
-          console.log(`[addCustomBuyButton] Snipe button clicked.`);
+         
           const url = new URL(window.location.href);
           const tokenMint = url.searchParams.get("address");
         
@@ -388,7 +388,7 @@ function insertAfter(referenceNode, newNode) {
         };
   
         insertBefore(migrationText, customButton);
-        console.log(`[addCustomBuyButton] Custom Snipe button inserted.`);
+       
       }).catch((storageError) => {
         console.error(`[addCustomBuyButton] Error accessing storage:`, storageError);
       });
@@ -398,33 +398,7 @@ function insertAfter(referenceNode, newNode) {
   }
 
   // Override the modal creation function
-function overrideSuspiciousModal() {
-  console.log("Overriding suspicious modal functions...");
 
-  // Attempt to override `q3n` function
-  try {
-      if (typeof q3n === "function") {
-          q3n = () => {}; // Neutralize the modal rendering
-          console.log("q3n function overridden.");
-      } else {
-          console.warn("q3n function not found.");
-      }
-  } catch (error) {
-      console.error("Error overriding q3n function:", error);
-  }
-
-  // Attempt to override `At`
-  try {
-      if (typeof At === "function") {
-          At = () => [false, () => {}]; // Prevent modal state from triggering
-          console.log("At function overridden.");
-      } else {
-          console.warn("At function not found.");
-      }
-  } catch (error) {
-      console.error("Error overriding At function:", error);
-  }
-}
 
 
   
@@ -457,7 +431,7 @@ function overrideSuspiciousModal() {
             ".w-full.relative.md\\:border-b.md\\:py-\\[12px\\].p-0.md\\:p-3.flex.flex-col.gap-y-\\[10px\\].md\\:flex-row.justify-between.items-center.md\\:h-\\[54px\\].bg-grey-900.md\\:border-solid.md\\:border-grey-600.z-\\[100\\]"
           );
           if (navbarContainer) {
-            console.log(`[addTopTokenCustomBuyOrSellButtons] Adjusting navbar container.`);
+         
             navbarContainer.classList.remove("md:h-[54px]");
           } else {
             console.warn(`[addTopTokenCustomBuyOrSellButtons] Navbar container not found.`);
@@ -468,7 +442,7 @@ function overrideSuspiciousModal() {
             ".nova1-buy-and-sell-buttons-container"
           );
           if (previousBuyAndSellButtonsContainer) {
-            console.log(`[addTopTokenCustomBuyOrSellButtons] Removing existing Buy/Sell buttons container.`);
+           
             previousBuyAndSellButtonsContainer.remove();
           }
   
@@ -480,7 +454,7 @@ function overrideSuspiciousModal() {
             console.error(`[addTopTokenCustomBuyOrSellButtons] Top Bar not found.`);
             return;
           }
-          console.log(`[addTopTokenCustomBuyOrSellButtons] Top Bar found.`);
+        
   
           topBar.classList.add("flex-col", "gap-y-2");
   
@@ -525,7 +499,7 @@ function overrideSuspiciousModal() {
           toggleBuyOrSellButton.textContent = "Switch to Sell";
           toggleBuyOrSellButton.style.fontSize = "14px";
           toggleBuyOrSellButton.addEventListener("click", () => {
-            console.log(`[addTopTokenCustomBuyOrSellButtons] Toggle Buy/Sell button clicked.`);
+           
             if (buyContainer.style.display === "flex") {
               isBuy = false;
               buttonText.textContent = "Sell";
@@ -533,7 +507,7 @@ function overrideSuspiciousModal() {
               input.setAttribute("placeholder", "Sell Percentage (%)");
               buyContainer.style.display = "none";
               sellContainer.style.display = "flex";
-              console.log(`[addTopTokenCustomBuyOrSellButtons] Switched to Sell mode.`);
+            
             } else {
               isBuy = true;
               buttonText.textContent = "Buy";
@@ -541,7 +515,7 @@ function overrideSuspiciousModal() {
               input.setAttribute("placeholder", "Buy Amount (SOL)");
               buyContainer.style.display = "flex";
               sellContainer.style.display = "none";
-              console.log(`[addTopTokenCustomBuyOrSellButtons] Switched to Buy mode.`);
+            
             }
           });
   
@@ -711,7 +685,8 @@ function overrideSuspiciousModal() {
           const buyOrSellButton = document.createElement("button");
           const buttonText = document.createElement("span");
           const buttonImg = document.createElement("img");
-          buttonImg.src = "https://click.tradeonnova.io/images/logo.png";
+          //buttonImg.src = "https://click.tradeonnova.io/images/logo.png";
+          buttonImg.src = chrome.runtime.getURL('src/logo.png');
           buttonImg.alt = "Nova Logo";
           buttonImg.style.aspectRatio = "1/1";
           buttonImg.style.height = "15px";
@@ -727,7 +702,7 @@ function overrideSuspiciousModal() {
           buyOrSellButton.style.flexShrink = "0";
           buyOrSellButton.style.border = "1px solid #ce7bed";
           buyOrSellButton.addEventListener("click", async () => {
-            console.log(`[addTopTokenCustomBuyOrSellButtons] Buy/Sell button clicked.`);
+          
             const inputElement = document.querySelector("[name='nova_buy_and_sell']");
             const buyOrSellValue = parseFloat(inputElement.value); // Get the value of the input field
   
@@ -742,7 +717,7 @@ function overrideSuspiciousModal() {
   
             const url = new URL(window.location.href);
             const tokenMint = url.searchParams.get("address");
-            console.log(`[addTopTokenCustomBuyOrSellButtons] Token Mint Address: ${tokenMint}`);
+         
   
             if (!tokenMint) {
               console.error(`[addTopTokenCustomBuyOrSellButtons] Token mint address not found in URL.`);
@@ -760,7 +735,7 @@ function overrideSuspiciousModal() {
             );
   
             if (result) {
-              console.log(`[addTopTokenCustomBuyOrSellButtons] ${isBuy ? 'Buy' : 'Sell'} transaction successful.`);
+             
               buyOrSellButton.querySelector("span").textContent = "Success!";
               setTimeout(() => {
                 buyOrSellButton.querySelector("span").textContent = isBuy ? "Buy" : "Sell";
@@ -783,10 +758,11 @@ function overrideSuspiciousModal() {
   
           // Create Buy Buttons Based on Buy Buttons List
           buyButtonsList.forEach((value) => {
-            console.log(`[addTopTokenCustomBuyOrSellButtons] Creating Buy button for ${value} SOL.`);
+          
             const customBuyButton = document.createElement("button");
             const buttonImg = document.createElement("img");
-            buttonImg.src = "https://click.tradeonnova.io/images/logo.png";
+            //buttonImg.src = "https://click.tradeonnova.io/images/logo.png";
+            buttonImg.src = chrome.runtime.getURL('src/logo.png');
             buttonImg.alt = "Nova Logo";
             buttonImg.style.aspectRatio = "1/1";
             buttonImg.style.height = "15px";
@@ -802,10 +778,10 @@ function overrideSuspiciousModal() {
             customBuyButton.style.border = "1px solid #ce7bed";
   
             customBuyButton.onclick = async function () {
-              console.log(`[addTopTokenCustomBuyOrSellButtons] Buy ${value} SOL button clicked.`);
+             
               const url = new URL(window.location.href);
               const tokenMint = url.searchParams.get("address");
-              console.log(`[addTopTokenCustomBuyOrSellButtons] Token Mint Address: ${tokenMint}`);
+            
   
               if (!tokenMint) {
                 console.error(`[addTopTokenCustomBuyOrSellButtons] Token mint address not found in URL.`);
@@ -823,7 +799,7 @@ function overrideSuspiciousModal() {
               );
   
               if (result) {
-                console.log(`[addTopTokenCustomBuyOrSellButtons] Buy ${value} SOL transaction successful.`);
+              
                 customBuyButton.querySelector("span").textContent = "Success!";
                 setTimeout(() => {
                   customBuyButton.disabled = false;
@@ -844,10 +820,11 @@ function overrideSuspiciousModal() {
   
           // Create Sell Buttons Based on Sell Buttons List
           sellButtonsList.forEach((value) => {
-            console.log(`[addTopTokenCustomBuyOrSellButtons] Creating Sell button for ${value}%.`);
+         
             const customSellButton = document.createElement("button");
             const buttonImg = document.createElement("img");
-            buttonImg.src = "https://click.tradeonnova.io/images/logo.png";
+            //buttonImg.src = "https://click.tradeonnova.io/images/logo.png";
+            buttonImg.src = chrome.runtime.getURL('src/logo.png');
             buttonImg.alt = "Nova Logo";
             buttonImg.style.aspectRatio = "1/1";
             buttonImg.style.height = "15px";
@@ -863,10 +840,10 @@ function overrideSuspiciousModal() {
             customSellButton.style.border = "1px solid #ce7bed";
   
             customSellButton.onclick = async function () {
-              console.log(`[addTopTokenCustomBuyOrSellButtons] Sell ${value}% button clicked.`);
+            
               const url = new URL(window.location.href);
               const tokenMint = url.searchParams.get("address");
-              console.log(`[addTopTokenCustomBuyOrSellButtons] Token Mint Address: ${tokenMint}`);
+            
   
               if (!tokenMint) {
                 console.error(`[addTopTokenCustomBuyOrSellButtons] Token mint address not found in URL.`);
@@ -884,7 +861,7 @@ function overrideSuspiciousModal() {
               );
   
               if (result) {
-                console.log(`[addTopTokenCustomBuyOrSellButtons] Sell ${value}% transaction successful.`);
+             
                 customSellButton.querySelector("span").textContent = "Success!";
                 setTimeout(() => {
                   customSellButton.disabled = false;
@@ -977,7 +954,8 @@ function overrideSuspiciousModal() {
           const buttonClass = isMigrating ? "nova-snipe-qt-btn" : "nova-buy-qt-btn1";
   
           const buttonImg = document.createElement("img");
-          buttonImg.src = "https://click.tradeonnova.io/images/logo.png";
+          //buttonImg.src = "https://click.tradeonnova.io/images/logo.png";
+          buttonImg.src = chrome.runtime.getURL('src/logo.png');
           buttonImg.alt = "Nova Logo";
           buttonImg.style.aspectRatio = "1/1";
           buttonImg.style.height = "15px";
@@ -1004,7 +982,7 @@ function overrideSuspiciousModal() {
             event.preventDefault();
             event.stopPropagation();
         
-            console.log("[anotherCustomButton] Button clicked.");
+          
             anotherCustomButton.disabled = true;
             anotherCustomButton.querySelector("span").textContent = "Processing...";
         
