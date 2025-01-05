@@ -908,7 +908,7 @@ function insertAfter(referenceNode, newNode) {
       
         novaAuthToken = result.nova_auth_token;
   
-        const cards = Array.from(document.querySelectorAll("div.pump-card"));
+        const cards = Array.from(document.querySelectorAll("div.neo-card"));
   
         cards.forEach((card, index) => {
           
