@@ -908,7 +908,15 @@ function insertAfter(referenceNode, newNode) {
       
         novaAuthToken = result.nova_auth_token;
   
-        const cards = Array.from(document.querySelectorAll("div.neo-card"));
+         const combinedCards = Array.from(
+          document.querySelectorAll("div.neo-card, div.pump-card")
+        );
+        const cards =
+          combinedCards.filter((card) => card.matches("div.neo-card")).length >
+          0
+            ? combinedCards.filter((card) => card.matches("div.neo-card"))
+            : combinedCards.filter((card) => card.matches("div.pump-card"));
+
   
         cards.forEach((card, index) => {
           
