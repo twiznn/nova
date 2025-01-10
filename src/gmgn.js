@@ -1,4 +1,4 @@
-// ###### DOM Manipulation 🌴 ######
+// // ###### DOM Manipulation 🌴 ######
 const insertElementAfter = (rNode, nNode) => {
   rNode.parentNode.insertBefore(nNode, rNode.nextSibling);
 };
@@ -24,7 +24,7 @@ const saveFlyingModalPosition = (left, top) => {
   );
 };
 
-// ###### Transaction 🪙 ######
+// // ###### Transaction 🪙 ######
 const transactToken = async (
   mintAddress,
   method,
@@ -85,7 +85,7 @@ const transactToken = async (
   }
 };
 
-// ###### Custom Hotkeys 🔥 ######
+// // ###### Custom Hotkeys 🔥 ######
 let isRequestInProgress = false;
 let keydownHandler;
 const addCustomBuyAndSellHotkeys = (mintAddress, authToken) => {
@@ -176,18 +176,18 @@ const removeHotkey = () => {
   document.removeEventListener("keydown", keydownHandler);
 };
 
-// ######################
-// ###### Main ✨ ######
-// ######################
-// Detect reference node for placement functions 🔍
+// // ######################
+// // ###### Main ✨ ######
+// // ######################
+// // Detect reference node for placement functions 🔍
 const searchAndFindTokenContainer = async (timeoutDuration = 12000) => {
   const interval = 600;
   const endTime = Date.now() + timeoutDuration;
 
   while (Date.now() < endTime) {
-    const lpLink = document.querySelector('a[href*="/lp/"]');
-    if (lpLink) {
-      const container = lpLink.closest("div")?.parentElement;
+    const solTokenLink = document.querySelector('a[href*="/sol/token"]');
+    if (solTokenLink) {
+      const container = solTokenLink.closest("div")?.parentElement;
       if (container) return container;
     }
     await new Promise((r) => setTimeout(r, interval));
@@ -195,28 +195,13 @@ const searchAndFindTokenContainer = async (timeoutDuration = 12000) => {
 
   return null;
 };
-const searchAndFindTopBar = async (timeoutDuration = 12000) => {
-  const interval = 600;
+const searchAndFindChartsContainer = async (timeoutDuration = 20000) => {
+  const interval = 1000;
   const endTime = Date.now() + timeoutDuration;
 
   while (Date.now() < endTime) {
-    const topBar = document.querySelector(".p-show__bar__row");
-    if (topBar) {
-      const lastDiv = topBar.querySelector(".l-col-md-auto:last-of-type");
-      if (lastDiv) return lastDiv;
-    }
-    await new Promise((r) => setTimeout(r, interval));
-  }
-
-  return null;
-};
-const searchAndFindBuyAndSellContainer = async (timeoutDuration = 12000) => {
-  const interval = 600;
-  const endTime = Date.now() + timeoutDuration;
-
-  while (Date.now() < endTime) {
-    const container = document.querySelector("div.js-show__trade-tabs");
-    if (container) return container;
+    const chartsContainer = document.getElementById("tokenCenter");
+    if (chartsContainer) return chartsContainer;
     await new Promise((r) => setTimeout(r, interval));
   }
 
@@ -224,89 +209,6 @@ const searchAndFindBuyAndSellContainer = async (timeoutDuration = 12000) => {
 };
 
 // Inject elements functions 💉
-const injectNovaSnipeButton = () => {
-  try {
-    let novaAuthToken;
-    let elementsClassname;
-    chrome.storage.local
-      .get(["nova_auth_token", "elements_classname"])
-      .then((result) => {
-        elementsClassname = result.elements_classname;
-        novaAuthToken = result.nova_auth_token;
-
-        const migrationElement = document.querySelector(
-          "div.p-show__migration",
-        );
-        const previousSnipingButton = document.querySelector(
-          `button.${CSS.escape(elementsClassname?.sn)}`,
-        );
-
-        if (previousSnipingButton) {
-          previousSnipingButton.remove();
-        }
-
-        if (migrationElement) {
-          const migrationText = migrationElement.querySelector("h2");
-          if (!migrationText) return;
-
-          const tokenMintAddress = document
-            .querySelector(".js-copy-to-clipboard:not(.p-show__bar__copy)")
-            ?.getAttribute("data-address");
-          if (!tokenMintAddress) return;
-
-          const customButton = document.createElement("button");
-          const buttonImg = document.createElement("img");
-          buttonImg.src = elementsClassname?.pp;
-          buttonImg.alt = "";
-          buttonImg.style.aspectRatio = "1/1";
-          buttonImg.style.height = "15px";
-          buttonImg.style.width = "15px";
-          buttonImg.style.marginRight = "5px";
-          const buttonText = document.createElement("span");
-          buttonText.textContent = "Snipe";
-
-          customButton.appendChild(buttonImg);
-          customButton.appendChild(buttonText);
-          customButton.type = "button";
-          customButton.classList.add(
-            elementsClassname?.sn,
-            "c-btn",
-            "c-btn--lt",
-          );
-          customButton.style.height = "32px";
-          customButton.style.padding = "0 10px";
-          customButton.style.marginBottom = "12px";
-
-          customButton.onclick = async function () {
-            customButton.disabled = true;
-            customButton.querySelector("span").textContent = "Processing...";
-
-            chrome.storage.local.get("default_buy_amount", async (r) => {
-              const defaultBuyAmount = r.default_buy_amount || 0.01;
-
-              const result = await transactToken(
-                tokenMintAddress,
-                "snipe",
-                defaultBuyAmount,
-                novaAuthToken,
-                {},
-              );
-
-              if (result) {
-                customButton.querySelector("span").textContent = "Success!";
-              } else {
-                customButton.querySelector("span").textContent = "Failed!";
-              }
-            });
-          };
-
-          insertElementBefore(migrationText, customButton);
-        }
-      });
-  } catch (error) {
-    // console.error("Failed to inject Nova Buy button ❌:", error);
-  }
-};
 const injectNovaContainer = () => {
   try {
     let novaAuthToken;
@@ -342,9 +244,8 @@ const injectNovaContainer = () => {
           sellButtonsList = [10, 25, 50, 100];
         }
 
-        const tokenMintAddress = document
-          .querySelector(".js-copy-to-clipboard:not(.p-show__bar__copy)")
-          ?.getAttribute("data-address");
+        const url = new URL(window.location.href);
+        const tokenMintAddress = url.pathname.split("/sol/token/")[1];
         if (!tokenMintAddress) return;
 
         // Add Hotkeys 🔥
@@ -358,32 +259,8 @@ const injectNovaContainer = () => {
         }
 
         // Detect placement of container
-        const topBar = document.querySelector(".p-show__bar__row");
-        if (!topBar) return;
-
-        // Custom Photon Adjustments ⚙️
-        // Main
-        const placementContainer = document.querySelector(
-          ".l-row.p-show__bar__row.u-align-items-center",
-        );
-        placementContainer.classList.remove("u-align-items-center", "l-row");
-        placementContainer.classList.add("u-align-items-start", "l-col");
-        const tokenCopyAndPairContainer = document.querySelector(
-          ".l-col-md-auto.l-col-12.u-d-flex",
-        );
-        tokenCopyAndPairContainer.style.height = "32px";
-        tokenCopyAndPairContainer.classList.add("u-align-items-center");
-        // Side
-        const pShowBar = document.querySelector(".p-show__bar");
-        pShowBar.style.padding = "12px 16px 8px 16px";
-        const grandParentEl = document.querySelectorAll(
-          ".l-col-lg-auto.l-col-12",
-        )[1];
-        grandParentEl.classList.add("u-pl-0");
-        const parentEl = document.querySelector(
-          ".p-show__bar__row.u-align-items-start.l-col",
-        );
-        parentEl.classList.add("u-pl-0");
+        const msContainer = document.querySelector(".ms-container");
+        if (!msContainer) return;
 
         // State
         let isBuy = true;
@@ -416,8 +293,6 @@ const injectNovaContainer = () => {
         toggleBuyOrSellButton.style.textWrap = "nowrap";
         toggleBuyOrSellButton.style.fontSize = "14px";
         toggleBuyOrSellButton.style.fontWeight = "600";
-        toggleBuyOrSellButton.style.color = "white";
-        toggleBuyOrSellButton.style.cursor = "pointer";
         toggleBuyOrSellButton.style.transition = ".2 ease-in-out";
 
         toggleBuyOrSellButton.addEventListener("mouseenter", () => {
@@ -479,9 +354,9 @@ const injectNovaContainer = () => {
           display: "flex",
           width: "270px",
           justifyContent: "center",
-          background: "rgb(34 36 44)",
+          background: "#121212",
           height: "36px",
-          border: "1px solid rgb(86 86 86)",
+          border: "1px solid rgb(38 40 44)",
           borderRadius: "8px",
           overflow: "hidden",
         });
@@ -499,7 +374,7 @@ const injectNovaContainer = () => {
           color: "white",
           fontWeight: "bold",
           fontSize: "12px",
-          borderRight: "1px solid rgb(86 86 86)",
+          borderRight: "1px solid rgb(38 40 44)",
         });
         buyLabelOption.textContent = "SOL";
 
@@ -511,7 +386,7 @@ const injectNovaContainer = () => {
         Object.assign(sellOptionsContainer.style, {
           display: "flex",
           alignItems: "center",
-          borderRight: "1px solid rgb(86 86 86)",
+          borderRight: "1px solid rgb(38 40 44)",
         });
         const setActiveOption = (optionElement) => {
           Array.from(sellOptionsContainer.children).forEach((child) => {
@@ -556,7 +431,7 @@ const injectNovaContainer = () => {
             const separator = document.createElement("div");
             Object.assign(separator.style, {
               height: "50%",
-              borderRight: "1px solid rgb(86 86 86)",
+              borderRight: "1px solid rgb(38 40 44)",
             });
             sellOptionsContainer.appendChild(separator);
           }
@@ -629,7 +504,6 @@ const injectNovaContainer = () => {
         buttonImg.style.width = "15px";
         buttonImg.style.marginRight = "5px";
         buttonText.textContent = "Buy";
-        buttonText.style.color = "white";
         buttonText.style.fontWeight = "600";
 
         buyOrSellButton.appendChild(buttonImg);
@@ -642,21 +516,18 @@ const injectNovaContainer = () => {
         buyOrSellButton.style.justifyContent = "center";
         buyOrSellButton.style.alignItems = "center";
         buyOrSellButton.style.gap = "4px";
-        buyOrSellButton.style.background = "rgb(63 66 73)";
+        buyOrSellButton.style.background = "rgb(38 40 44)";
         buyOrSellButton.style.padding = "6px 12px";
         buyOrSellButton.style.marginRight = "6px";
         buyOrSellButton.style.borderRadius = "8px";
-        buyOrSellButton.style.border = "none";
-        buyOrSellButton.style.outline = "none";
         buyOrSellButton.style.flexShrink = "0";
-        buyOrSellButton.style.cursor = "pointer";
         buyOrSellButton.style.transition = ".2 ease-in-out";
 
         buyOrSellButton.addEventListener("mouseenter", () => {
-          buyOrSellButton.style.background = "rgb(78 80 85)";
+          buyOrSellButton.style.background = "rgb(63 66 73)";
         });
         buyOrSellButton.addEventListener("mouseleave", () => {
-          buyOrSellButton.style.background = "rgb(63 66 73)";
+          buyOrSellButton.style.background = "rgb(38 40 44)";
         });
 
         buyOrSellButton.addEventListener("click", async () => {
@@ -719,7 +590,6 @@ const injectNovaContainer = () => {
             const buttonText = document.createElement("span");
             buttonText.textContent = `Buy ${buttonValue} SOL`;
             buttonText.style.fontWeight = "600";
-            buttonText.style.color = "white";
 
             const customBuyButton = document.createElement("button");
             customBuyButton.appendChild(buttonImg);
@@ -731,19 +601,16 @@ const injectNovaContainer = () => {
             customBuyButton.style.justifyContent = "center";
             customBuyButton.style.alignItems = "center";
             customBuyButton.style.gap = "4px";
-            customBuyButton.style.background = "rgb(63 66 73)";
+            customBuyButton.style.background = "rgb(38 40 44)";
             customBuyButton.style.padding = "6px 12px";
             customBuyButton.style.marginRight = "6px";
             customBuyButton.style.borderRadius = "8px";
-            customBuyButton.style.border = "none";
-            customBuyButton.style.outline = "none";
-            customBuyButton.style.cursor = "pointer";
             customBuyButton.style.transition = ".2 ease-in-out";
             customBuyButton.addEventListener("mouseenter", () => {
-              customBuyButton.style.background = "rgb(78 80 85)";
+              customBuyButton.style.background = "rgb(63 66 73)";
             });
             customBuyButton.addEventListener("mouseleave", () => {
-              customBuyButton.style.background = "rgb(63 66 73)";
+              customBuyButton.style.background = "rgb(38 40 44)";
             });
 
             customBuyButton.onclick = async function () {
@@ -795,7 +662,6 @@ const injectNovaContainer = () => {
             const buttonText = document.createElement("span");
             buttonText.textContent = `Sell ${buttonValue}%`;
             buttonText.style.fontWeight = "600";
-            buttonText.style.color = "white";
 
             const customSellButton = document.createElement("button");
             customSellButton.appendChild(buttonImg);
@@ -807,19 +673,16 @@ const injectNovaContainer = () => {
             customSellButton.style.justifyContent = "center";
             customSellButton.style.alignItems = "center";
             customSellButton.style.gap = "4px";
-            customSellButton.style.background = "rgb(63 66 73)";
+            customSellButton.style.background = "rgb(38 40 44)";
             customSellButton.style.padding = "6px 12px";
             customSellButton.style.marginRight = "6px";
             customSellButton.style.borderRadius = "8px";
-            customSellButton.style.border = "none";
-            customSellButton.style.outline = "none";
-            customSellButton.style.cursor = "pointer";
             customSellButton.style.transition = ".2 ease-in-out";
             customSellButton.addEventListener("mouseenter", () => {
-              customSellButton.style.background = "rgb(78 80 85)";
+              customSellButton.style.background = "rgb(63 66 73)";
             });
             customSellButton.addEventListener("mouseleave", () => {
-              customSellButton.style.background = "rgb(63 66 73)";
+              customSellButton.style.background = "rgb(38 40 44)";
             });
 
             customSellButton.onclick = async function () {
@@ -876,7 +739,7 @@ const injectNovaContainer = () => {
         customBuyAndSellWithToggleWrapper.append(toggleBuyOrSellButton);
         buyAndSellButtonsContainer.append(customBuyAndSellWithToggleWrapper);
 
-        topBar.appendChild(buyAndSellButtonsContainer);
+        insertElementBefore(msContainer, buyAndSellButtonsContainer);
       });
   } catch (error) {
     // console.error("Failed to inject Nova Buy button ❌:", error);
@@ -913,7 +776,6 @@ const injectNovaFlyingModal = () => {
         activePresetLabel = result.active_preset_label;
         firstPresetValues = result.first_preset_values;
         secondPresetValues = result.second_preset_values;
-
         if (!showFlyingModal) return;
 
         // Style 🎨
@@ -953,9 +815,8 @@ const injectNovaFlyingModal = () => {
           sellButtonsList = [10, 25, 50, 100];
         }
 
-        const tokenMintAddress = document
-          .querySelector(".js-copy-to-clipboard:not(.p-show__bar__copy)")
-          ?.getAttribute("data-address");
+        const url = new URL(window.location.href);
+        const tokenMintAddress = url.pathname.split("/sol/token/")[1];
         if (!tokenMintAddress) return;
 
         // Add Hotkeys 🔥
@@ -1991,21 +1852,20 @@ const injectNovaMemescopeButtonList = () => {
         novaAuthToken = result.nova_auth_token;
 
         const memescopeCardAddress = Array.from(
-          document.querySelectorAll('a[href*="/lp/"]'),
+          document.querySelectorAll('a[href*="/sol/token/"]'),
         );
 
         const cards = memescopeCardAddress.flatMap((link) => {
-          const card = link.closest("div");
-          const isMemescopecard =
-            card &&
-            card.querySelector('[data-tooltip-id="tooltip-memescopecard"]');
-          return isMemescopecard ? [card] : [];
+          const card = link.parentElement;
+          // Check for either buy or migrating cards
+          const isBuyCard = card && card.querySelector('[datatype="out"]');
+          const isMigratingCard = card && card.querySelector(".css-wwsz0d");
+          return isBuyCard || isMigratingCard ? [card] : [];
         });
 
         cards.forEach((card) => {
-          const isMigrating = Array.from(card.querySelectorAll("span")).some(
-            (span) => span.textContent === "Migrating...",
-          );
+          const isMigrating =
+            card.querySelector(".css-wwsz0d")?.textContent.trim() === "Seeding";
 
           const existingBuyButton = card.querySelector(
             `button.${CSS.escape(elementsClassname?.b)}`,
@@ -2024,17 +1884,20 @@ const injectNovaMemescopeButtonList = () => {
             }
           }
 
-          const tokenMintAddress = card
-            .querySelector(".js-copy-to-clipboard")
-            ?.getAttribute("data-address");
-          if (!tokenMintAddress) return;
+          const tokenHref = card
+            .getElementsByTagName("a")[0]
+            .getAttribute("href");
+          const tokenMintAddress = tokenHref.split("/sol/token/")[1];
 
-          let actionArea = card.querySelector("button");
+          let actionArea;
           if (isMigrating) {
-            actionArea = Array.from(card.querySelectorAll("span")).find(
-              (span) => span.textContent === "Migrating...",
-            );
+            const seedingElement = card.querySelector(".css-wwsz0d");
+            // actionArea = seedingElement.parentElement;
+            actionArea = seedingElement;
+          } else {
+            actionArea = card.querySelector('[datatype="out"]').parentElement;
           }
+
           if (!actionArea) return;
 
           const generatedBuyButtonClassName = elementsClassname?.b;
@@ -2049,24 +1912,35 @@ const injectNovaMemescopeButtonList = () => {
           buttonImg.style.aspectRatio = "1/1";
           buttonImg.style.height = "15px";
           buttonImg.style.width = "15px";
-          buttonImg.style.marginRight = "5px";
+          buttonImg.style.marginRight = "0px";
+
           const buttonText = document.createElement("span");
           buttonText.textContent = isMigrating ? "Snipe" : "Buy";
-          const anotherCustomButton = document.createElement("button");
 
+          const anotherCustomButton = document.createElement("button");
           anotherCustomButton.appendChild(buttonImg);
           anotherCustomButton.appendChild(buttonText);
           anotherCustomButton.type = "button";
-          anotherCustomButton.classList.add(
-            buttonClass,
-            "c-btn",
-            "c-btn--lt",
-            "u-px-xs",
-          );
-          anotherCustomButton.style.bottom = "1.5px";
-          anotherCustomButton.style.right = "6px";
+          anotherCustomButton.classList.add(buttonClass);
+          anotherCustomButton.style.boxSizing = "border-box";
+          anotherCustomButton.style.width = "max-content";
+          anotherCustomButton.style.display = "flex";
+          anotherCustomButton.style.justifyContent = "center";
+          anotherCustomButton.style.alignItems = "center";
+          anotherCustomButton.style.gap = "4px";
+          anotherCustomButton.style.background = "transparent";
+          anotherCustomButton.style.padding = "4px 12px";
+          anotherCustomButton.style.marginRight = "6px";
+          anotherCustomButton.style.borderRadius = "8px";
           anotherCustomButton.style.position = "relative";
           anotherCustomButton.style.zIndex = "1000";
+          anotherCustomButton.style.transition = ".2 ease-in-out";
+          anotherCustomButton.addEventListener("mouseenter", () => {
+            anotherCustomButton.style.background = "rgb(38 40 44)";
+          });
+          anotherCustomButton.addEventListener("mouseleave", () => {
+            anotherCustomButton.style.background = "transparent";
+          });
 
           anotherCustomButton.onclick = async function (event) {
             event.preventDefault();
@@ -2093,7 +1967,7 @@ const injectNovaMemescopeButtonList = () => {
                     "Success!";
                   setTimeout(() => {
                     anotherCustomButton.querySelector("span").textContent =
-                      "Buy";
+                      isMigrating ? "Snipe" : "Buy";
                     anotherCustomButton.disabled = false;
                   }, 700);
                 } else {
@@ -2101,7 +1975,7 @@ const injectNovaMemescopeButtonList = () => {
                     "Failed!";
                   setTimeout(() => {
                     anotherCustomButton.querySelector("span").textContent =
-                      "Buy";
+                      isMigrating ? "Snipe" : "Buy";
                     anotherCustomButton.disabled = false;
                   }, 700);
                 }
@@ -2109,7 +1983,11 @@ const injectNovaMemescopeButtonList = () => {
             );
           };
 
-          insertElementBefore(actionArea, anotherCustomButton);
+          if (isMigrating) {
+            insertElementBefore(actionArea, anotherCustomButton);
+          } else {
+            actionArea.insertBefore(anotherCustomButton, actionArea.firstChild);
+          }
         });
       });
   } catch (error) {
@@ -2124,7 +2002,7 @@ const injectNovaMemescopeButtonList = () => {
   }
 };
 
-// ###### Message Listener 📩 ######
+// // ###### Message Listener 📩 ######
 chrome.runtime.onMessage.addListener(async function (request) {
   chrome.storage.local
     .get(["is_nova_extension_on", "elements_classname"])
@@ -2135,7 +2013,7 @@ chrome.runtime.onMessage.addListener(async function (request) {
       // Only proceed if the extension is on
       if (!isExtensionOn) return;
 
-      if (request.message === "photon-memescope") {
+      if (request.message === "gmgn-memescope") {
         const previousDraggableNovaModal = document.querySelector(
           `div.${CSS.escape(elementsClassname?.bsfm)}`,
         );
@@ -2161,47 +2039,23 @@ chrome.runtime.onMessage.addListener(async function (request) {
         }
       }
 
-      if (request.message === "photon-token-save") {
+      if (request.message === "gmgn-token-save") {
         // console.log("SAVE MESSAGE 📌: ", request.message);
         const currentUrl = window.location.href;
-        if (currentUrl.includes("/en/lp/") || currentUrl.includes("/zn/lp/")) {
+        if (currentUrl.includes("/sol/token")) {
           injectNovaContainer();
           injectNovaFlyingModal();
         }
       }
 
-      if (request.message === "photon-token") {
-        // console.log("PHOTON TOKEN MESSAGE 📌: ", request.message);
-        const topBar = await searchAndFindTopBar();
-        const buySellContainer = await searchAndFindBuyAndSellContainer();
-        if (topBar) {
+      if (request.message === "gmgn-token") {
+        // console.log("GMGN TOKEN MESSAGE 📌: ", request.message);
+        const chartsContainer = await searchAndFindChartsContainer();
+        if (chartsContainer) {
           injectNovaContainer();
           injectNovaFlyingModal();
-        }
-        if (buySellContainer) {
-          injectNovaSnipeButton();
-        }
-        let currentMigrating = document.querySelector("div.p-show__migration");
-        if (buySellContainer) {
-          const observer = new MutationObserver((mutations) => {
-            if (
-              mutations.every(
-                (m) =>
-                  m.target.nodeName &&
-                  m.target.nodeName.toLowerCase() === "span",
-              )
-            )
-              return;
-            const migrating = document.querySelector("div.p-show__migration");
-            if (Boolean(migrating) !== Boolean(currentMigrating)) {
-              currentMigrating = migrating;
-              injectNovaSnipeButton();
-            }
-          });
-          observer.observe(buySellContainer, {
-            childList: true,
-            subtree: true,
-          });
+        } else {
+          // console.log("CHARTS CONTAINER DOESNT EXIST ❌");
         }
       }
     });

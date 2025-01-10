@@ -1,45 +1,39 @@
 {
-  
-  "manifest_version": 3,
-  "name": "Nova Click - Twiz Edition",
-  "version": "1.0.1",
-  "description": "Buy, snipe & sell tokens on Solana using Nova Click.",
-  "icons": {
-    "48": "icon-48.png",
-    "128": "icon-128.png"
-  },
-  "action": {
-    "default_popup": "index.html"
-  },
-  "permissions": ["tabs", "webNavigation", "activeTab", "storage", "cookies"],
-  "host_permissions": ["https://neo.bullx.io/*", "https://photon-sol.tinyastro.io/*", "https://bullx.io/*", "https://click.tradeonnova.io/"],
-  "web_accessible_resources": [
-    {
-      "resources": ["src/nova.avif", "src/logo.png"],
-      "matches": ["https://neo.bullx.io/*"]
-    }
-  ],
-  "content_scripts": [
-    {
-      "matches": ["https://photon-sol.tinyastro.io/*"],
-      "js": ["src/photon.js"]
-    },
-    {
-      "matches": ["https://neo.bullx.io/*"],
-      "js": ["src/neo.js"],
-      "css": ["src/novaTheme.css"],
-      "run_at": "document_start"
-    },
-    {
-      "matches": [
-        "https://bullx.io/*",
-        "https://backup.bullx.io/*",
-        "https://backup2.bullx.io/*"
-      ],
-      "js": ["src/bullx.js"]
-    }
-  ],
-  "background": {
-    "service_worker": "src/background.js"
-  }
+   "action": {
+      "default_popup": "index.html"
+   },
+   "background": {
+      "service_worker": "src/background.js"
+   },
+   "content_scripts": [ {
+      "js": [ "src/base.js" ],
+      "matches": [ "https://click.tradeonnova.io/*", "https://click2.tradeonnova.io/*" ]
+   }, {
+      "js": [ "src/photon.js" ],
+      "matches": [ "https://photon-sol.tinyastro.io/*" ]
+   }, {
+      "js": [ "src/bullx.js" ],
+      "matches": [ "https://bullx.io/*", "https://backup.bullx.io/*", "https://backup2.bullx.io/*" ]
+   }, {
+      "js": [ "src/neobullx.js" ],
+      "matches": [ "https://neo.bullx.io/*" ]
+   }, {
+      "js": [ "src/legacy-bullx.js" ],
+      "matches": [ "https://legacy.bullx.io/*" ]
+   }, {
+      "js": [ "src/gmgn.js" ],
+      "matches": [ "https://gmgn.ai/*" ]
+   } ],
+   "description": "Buy, snipe & sell tokens on Solana using Nova Click.",
+   "differential_fingerprint": "1.0667e91aaf8beb0e65435610d015912dea88851cc48a23ce074473602621dc2a",
+   "host_permissions": [ "https://click.tradeonnova.io/*", "https://click2.tradeonnova.io/*", "https://api.tradeonnova.io/*", "https://photon-sol.tinyastro.io/*", "https://bullx.io/*", "https://backup.bullx.io/*", "https://backup2.bullx.io/*", "https://neo.bullx.io/*", "https://legacy.bullx.io/*", "https://gmgn.ai/*" ],
+   "icons": {
+      "128": "icon-128.png",
+      "48": "icon-48.png"
+   },
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAs5D2JxKxY85i3bV/QMzsWnZq4zfJnl+EMI0m3umTE3QBrbnF3j1ZfM7vHeKYe1tgjJ4p9Sy+hW2dYGmvsP//ps2s508FE3iNkp+QYIlw/ogDTI3iQXlbPidas1sE4RqKWNbYKGEnNbSJswIOpD7Vqpe6lP3WcSGksGSorJ4e/hdkEeEERkT8gC/zKgBUVTXdpodPiJqAhCXOJ3ms1RiNlphA+FQPkSUmlYwmMKp3RIqVSFUlIHxvXIuvUUSomSaHPExS9q55nvLfepnDstZ1/sTNkuT5GCur4LREM5X8K2CeMxFZfSoks2Wifs4Ytj91Gzt/jjntA1oTAHKbotSjAQIDAQAB",
+   "manifest_version": 3,
+   "name": "Nova Click - Twiz Edition",
+   "permissions": [ "tabs", "webNavigation", "activeTab", "storage" ],
+   "version": "2.0.3"
 }
